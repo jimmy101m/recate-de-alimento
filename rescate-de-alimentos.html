@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Encuentra alimentos disponibles cerca de ti, resérvalos a menor precio y recógelos antes del cierre." />
+    <meta name="theme-color" content="#12372a" />
+    <title>Rescate de alimentos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2312372a'/%3E%3Cpath d='M17 34c10-1 15-7 16-18 10 6 15 15 10 24-5 9-18 11-26 3 5 0 10-2 14-7-5 3-9 3-14-2Z' fill='%23e5f45c'/%3E%3C/svg%3E" />
+    <style>
+      :root {
+        --ink: #10251d;
+        --forest: #12372a;
+        --forest-soft: #1c4a39;
+        --lime: #e5f45c;
+        --lime-soft: #f3f8bd;
+        --cream: #f8f4e9;
+        --paper: #fffdf8;
+        --line: rgba(16, 37, 29, 0.14);
+        --muted: #617069;
+        --orange: #f19b53;
+        --shadow: 0 24px 70px rgba(18, 55, 42, 0.15);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--cream);
+        font-family: "DM Sans", system-ui, sans-serif;
+        font-size: 16px;
+        line-height: 1.55;
+      }
+      button, a { -webkit-tap-highlight-color: transparent; }
+      button { font: inherit; }
+      a { color: inherit; text-decoration: none; }
+      img { display: block; max-width: 100%; }
+      .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 82px;
+        gap: 24px;
+      }
+      .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 800; }
+      .brand-mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 11px;
+        display: grid;
+        place-items: center;
+        color: var(--lime);
+        background: var(--forest);
+      }
+      .brand-mark svg { width: 21px; height: 21px; }
+      .nav-links { display: flex; gap: 28px; align-items: center; color: #43554d; font-size: .94rem; }
+      .nav-links a:hover { color: var(--ink); }
+
+      .btn {
+        border: 0;
+        border-radius: 14px;
+        min-height: 48px;
+        padding: 0 21px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+      }
+      .btn:hover { transform: translateY(-2px); }
+      .btn:focus-visible, a:focus-visible { outline: 3px solid rgba(241, 155, 83, .55); outline-offset: 3px; }
+      .btn-primary { color: var(--forest); background: var(--lime); box-shadow: 0 12px 30px rgba(229, 244, 92, .2); }
+      .btn-dark { color: white; background: var(--forest); box-shadow: 0 12px 30px rgba(18, 55, 42, .18); }
+      .btn-ghost { color: var(--forest); background: transparent; border: 1px solid rgba(18, 55, 42, .25); }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        background: var(--forest);
+        color: white;
+        border-radius: 34px;
+        padding: 74px 64px 58px;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        width: 560px;
+        height: 560px;
+        border-radius: 50%;
+        right: -210px;
+        top: -260px;
+        border: 90px solid rgba(229, 244, 92, .12);
+      }
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(255,255,255,.09) 1px, transparent 1px);
+        background-size: 22px 22px;
+        mask-image: linear-gradient(to right, transparent 15%, black 90%);
+        pointer-events: none;
+      }
+      .hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1.02fr .98fr; align-items: center; gap: 62px; }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.1);
+        color: var(--lime-soft);
+        font-size: .85rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+      }
+      .eyebrow-dot { width: 7px; height: 7px; background: var(--lime); border-radius: 50%; }
+      h1, h2, h3 { font-family: "Manrope", sans-serif; letter-spacing: -.035em; margin: 0; }
+      h1 { max-width: 650px; font-size: clamp(2.9rem, 5.4vw, 5.35rem); line-height: .98; margin-top: 24px; }
+      .hero-copy > p { max-width: 580px; color: rgba(255,255,255,.75); font-size: 1.08rem; margin: 25px 0 30px; }
+      .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+      .hero .btn-ghost { color: white; border-color: rgba(255,255,255,.3); }
+      .microcopy { margin-top: 22px; color: rgba(255,255,255,.6); font-size: .85rem; }
+
+      .phone-wrap { display: flex; justify-content: center; perspective: 900px; }
+      .phone {
+        width: min(100%, 390px);
+        padding: 14px;
+        color: var(--ink);
+        background: #101612;
+        border-radius: 34px;
+        box-shadow: 0 35px 80px rgba(0,0,0,.38);
+        transform: rotate(2.2deg);
+      }
+      .phone-screen { overflow: hidden; background: #f8f7f0; border-radius: 24px; }
+      .phone-top { display: flex; align-items: center; justify-content: space-between; padding: 23px 20px 15px; }
+      .location { font-size: .76rem; color: var(--muted); }
+      .location strong { display: block; color: var(--ink); font-size: .94rem; }
+      .avatar { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: var(--lime); font-weight: 800; }
+      .search { margin: 0 18px 17px; padding: 12px 14px; display: flex; gap: 9px; align-items: center; color: #7c8983; background: white; border: 1px solid #e8e7e1; border-radius: 13px; font-size: .83rem; }
+      .listing { margin: 0 18px 18px; overflow: hidden; background: white; border-radius: 18px; box-shadow: 0 10px 35px rgba(18,55,42,.1); }
+      .listing-img { height: 166px; width: 100%; object-fit: cover; background: #d8c0a1; }
+      .listing-body { padding: 15px; }
+      .listing-meta { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: .74rem; }
+      .listing h3 { margin: 7px 0 4px; font-size: 1rem; letter-spacing: -.01em; }
+      .price-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 13px; }
+      .price { font-size: 1.18rem; font-weight: 800; }
+      .old-price { margin-left: 6px; color: #8c9893; text-decoration: line-through; font-size: .77rem; }
+      .reserve-mini { border: 0; border-radius: 10px; background: var(--forest); color: white; padding: 9px 14px; cursor: pointer; font-weight: 700; font-size: .78rem; }
+      .impact-strip { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid #e6e6df; }
+      .impact-strip div { padding: 11px 8px; text-align: center; font-size: .7rem; color: var(--muted); border-right: 1px solid #e6e6df; }
+      .impact-strip div:last-child { border-right: 0; }
+      .impact-strip strong { display: block; color: var(--ink); font-size: .8rem; }
+
+      section { padding: 102px 0; }
+      .section-label { color: #426b58; font-weight: 800; font-size: .82rem; letter-spacing: .12em; text-transform: uppercase; }
+      .section-head { display: flex; align-items: end; justify-content: space-between; gap: 40px; margin-bottom: 50px; }
+      .section-head h2 { max-width: 650px; font-size: clamp(2.2rem, 4vw, 3.7rem); line-height: 1.05; margin-top: 12px; }
+      .section-head p { max-width: 440px; color: var(--muted); margin: 0; }
+
+      .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+      .step { position: relative; min-height: 260px; padding: 29px; background: var(--paper); border: 1px solid var(--line); border-radius: 24px; }
+      .step-number { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; background: var(--lime); font-weight: 800; }
+      .step svg { width: 32px; height: 32px; margin-top: 42px; color: var(--forest); }
+      .step h3 { margin: 15px 0 7px; font-size: 1.22rem; }
+      .step p { color: var(--muted); margin: 0; }
+
+      .benefits { padding-top: 16px; }
+      .benefit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+      .benefit-card { border-radius: 28px; padding: 42px; min-height: 390px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+      .benefit-card.user { background: var(--lime); }
+      .benefit-card.business { background: var(--forest); color: white; }
+      .benefit-card h2 { font-size: clamp(2rem, 3.3vw, 3.1rem); line-height: 1.06; max-width: 440px; }
+      .benefit-card p { max-width: 500px; color: rgba(16,37,29,.72); }
+      .benefit-card.business p { color: rgba(255,255,255,.72); }
+      .benefit-list { display: grid; gap: 11px; margin-top: 28px; }
+      .benefit-item { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+      .check { width: 25px; height: 25px; display: grid; place-items: center; border-radius: 50%; background: rgba(255,255,255,.5); }
+      .business .check { color: var(--forest); background: var(--lime); }
+
+      .quote { display: grid; grid-template-columns: .8fr 1.2fr; gap: 60px; align-items: center; }
+      .quote-stat { border-radius: 28px; background: var(--paper); border: 1px solid var(--line); padding: 42px; }
+      .quote-stat strong { display: block; color: var(--forest); font-family: "Manrope"; font-size: clamp(3rem, 6vw, 5.5rem); line-height: .95; }
+      .quote-stat span { color: var(--muted); }
+      blockquote { margin: 0; font-family: "Manrope"; font-size: clamp(1.75rem, 3vw, 2.7rem); line-height: 1.2; letter-spacing: -.03em; }
+      blockquote footer { margin-top: 24px; color: var(--muted); font-family: "DM Sans"; font-size: 1rem; letter-spacing: 0; }
+
+      .cta { padding: 70px 0 30px; }
+      .cta-box { position: relative; overflow: hidden; padding: 68px 50px; text-align: center; color: white; background: var(--forest); border-radius: 30px; }
+      .cta-box::after { content: ""; position: absolute; width: 260px; height: 260px; left: -100px; bottom: -165px; border: 55px solid var(--lime); border-radius: 50%; opacity: .8; }
+      .cta-box h2 { font-size: clamp(2.2rem, 4vw, 4rem); line-height: 1.06; }
+      .cta-box p { max-width: 570px; margin: 17px auto 27px; color: rgba(255,255,255,.72); }
+      footer.site-footer { padding: 32px 0 42px; display: flex; justify-content: space-between; align-items: center; gap: 22px; color: #65736d; font-size: .88rem; }
+
+      .modal-backdrop { position: fixed; inset: 0; z-index: 20; display: none; place-items: center; padding: 22px; background: rgba(7,22,16,.7); backdrop-filter: blur(7px); }
+      .modal-backdrop.open { display: grid; }
+      .modal { width: min(100%, 470px); background: var(--paper); border-radius: 24px; padding: 30px; box-shadow: var(--shadow); }
+      .modal-icon { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 16px; background: var(--lime); color: var(--forest); }
+      .modal h2 { margin-top: 18px; font-size: 1.7rem; }
+      .modal p { color: var(--muted); }
+      .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+
+      @media (max-width: 900px) {
+        .nav-links a:not(.nav-cta) { display: none; }
+        .hero { padding: 60px 34px 42px; }
+        .hero-grid, .quote { grid-template-columns: 1fr; }
+        .hero-grid { gap: 48px; }
+        .phone { transform: none; }
+        .section-head { display: block; }
+        .section-head p { margin-top: 20px; }
+        .steps { grid-template-columns: 1fr; }
+        .step { min-height: auto; }
+        .step svg { margin-top: 30px; }
+        .benefit-grid { grid-template-columns: 1fr; }
+      }
+
+      @media (max-width: 580px) {
+        .shell { width: min(100% - 24px, 1180px); }
+        .nav { min-height: 70px; }
+        .nav .btn { min-height: 42px; padding: 0 14px; }
+        .brand span:last-child { max-width: 100px; line-height: 1.05; }
+        .hero { border-radius: 24px; padding: 46px 20px 30px; }
+        h1 { font-size: 3.02rem; }
+        .hero-actions { align-items: stretch; flex-direction: column; }
+        .hero-actions .btn { width: 100%; }
+        section { padding: 78px 0; }
+        .section-head h2 { font-size: 2.35rem; }
+        .benefit-card { min-height: 360px; padding: 30px 24px; }
+        .quote { gap: 28px; }
+        .quote-stat { padding: 30px; }
+        .cta-box { padding: 54px 24px; }
+        footer.site-footer { flex-direction: column; text-align: center; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="shell nav" aria-label="Navegación principal">
+      <a class="brand" href="#inicio" aria-label="Rescate de alimentos, inicio">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 14c6-.5 9-4 10-10 5 4 7 9 4 14-3 4-10 4-14 0 3 0 5-1 7-4-3 2-5 2-7 0Z"/></svg>
+        </span>
+        <span>Rescate de alimentos</span>
+      </a>
+      <nav class="nav-links" aria-label="Secciones">
+        <a href="#como-funciona">Cómo funciona</a>
+        <a href="#beneficios">Beneficios</a>
+        <a class="btn btn-dark nav-cta" href="#participar">Quiero participar</a>
+      </nav>
+    </header>
+
+    <main id="inicio">
+      <div class="shell">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <span class="eyebrow"><span class="eyebrow-dot"></span> Bueno para tu bolsillo. Mejor para todos.</span>
+              <h1 id="hero-title">Que la comida encuentre un nuevo destino.</h1>
+              <p>Descubre alimentos disponibles cerca de ti, resérvalos a menor precio y recógelos antes del cierre. Fácil para ti y útil para los negocios.</p>
+              <div class="hero-actions">
+                <a class="btn btn-primary" href="#disponibles">Ver alimentos cerca <span aria-hidden="true">→</span></a>
+                <a class="btn btn-ghost" href="#negocios">Registrar mi negocio</a>
+              </div>
+              <p class="microcopy">Prototipo conceptual · Sin pagos ni registro real</p>
+            </div>
+
+            <div class="phone-wrap" id="disponibles" aria-label="Vista previa de la aplicación">
+              <div class="phone">
+                <div class="phone-screen">
+                  <div class="phone-top">
+                    <div class="location">Tu ubicación<strong>Ciudad de México</strong></div>
+                    <div class="avatar" aria-label="Perfil de Jaime">J</div>
+                  </div>
+                  <div class="search" aria-hidden="true">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+                    Buscar pan, comida, postres...
+                  </div>
+                  <article class="listing">
+                    <img class="listing-img" src="https://unsplash.com/photos/u_TL1V9DgJI/download?force=true&amp;w=900" alt="Canasta con croissants y otros alimentos" />
+                    <div class="listing-body">
+                      <div class="listing-meta"><span>Panadería La Espiga</span><span>1.2 km</span></div>
+                      <h3>Paquete sorpresa de pan</h3>
+                      <div class="listing-meta"><span>10 piezas variadas</span><span>Recoge antes de 8:30 p. m.</span></div>
+                      <div class="price-row">
+                        <div><span class="price">$35</span><span class="old-price">$80</span></div>
+                        <button class="reserve-mini js-open-modal" type="button">Reservar</button>
+                      </div>
+                    </div>
+                    <div class="impact-strip">
+                      <div><strong>56%</strong>menos</div>
+                      <div><strong>Hoy</strong>recolección</div>
+                      <div><strong>1 paso</strong>para reservar</div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section id="como-funciona">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <span class="section-label">Así de sencillo</span>
+              <h2>Encuentra, reserva y recoge.</h2>
+            </div>
+            <p>Todo sucede en pocos pasos porque las oportunidades aparecen por tiempo limitado, antes de que el establecimiento cierre.</p>
+          </div>
+          <div class="steps">
+            <article class="step">
+              <span class="step-number">1</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+              <h3>Explora cerca de ti</h3>
+              <p>Compara opciones, precios, distancia y la hora límite de recolección.</p>
+            </article>
+            <article class="step">
+              <span class="step-number">2</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 3h14v18l-7-4-7 4V3Z"/><path d="m9 9 2 2 4-4"/></svg>
+              <h3>Reserva tu paquete</h3>
+              <p>Revisa qué incluye, confirma tu elección y recibe los datos para recogerlo.</p>
+            </article>
+            <article class="step">
+              <span class="step-number">3</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 10h16v10H4z"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/><path d="m9 15 2 2 4-4"/></svg>
+              <h3>Recoge en el negocio</h3>
+              <p>Muestra tu reserva en el establecimiento y recibe el alimento. Eso es todo.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="benefits" id="beneficios">
+        <div class="shell benefit-grid">
+          <article class="benefit-card user">
+            <div>
+              <span class="section-label">Para quienes compran</span>
+              <h2>Comer bien puede costar menos.</h2>
+              <p>Encuentra opciones cercanas sin recorrer negocio por negocio ni depender de promociones que quizá ya terminaron.</p>
+            </div>
+            <div class="benefit-list">
+              <div class="benefit-item"><span class="check">✓</span> Precios claros desde el inicio</div>
+              <div class="benefit-item"><span class="check">✓</span> Nuevos lugares por descubrir</div>
+              <div class="benefit-item"><span class="check">✓</span> Reservas rápidas y sin complicaciones</div>
+            </div>
+          </article>
+          <article class="benefit-card business" id="negocios">
+            <div>
+              <span class="section-label" style="color: var(--lime)">Para establecimientos</span>
+              <h2>El excedente todavía puede generar valor.</h2>
+              <p>Publica productos que probablemente no se venderán por la vía habitual e indica cantidad, precio y horario disponible.</p>
+            </div>
+            <div class="benefit-list">
+              <div class="benefit-item"><span class="check">✓</span> Recupera parte del valor del producto</div>
+              <div class="benefit-item"><span class="check">✓</span> Reduce alimentos desechados al cierre</div>
+              <div class="benefit-item"><span class="check">✓</span> Atrae personas cercanas al negocio</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="shell quote">
+          <div class="quote-stat"><strong>$35</strong><span>por un paquete que normalmente costaría $80</span></div>
+          <blockquote>“No se trata de vender cualquier sobrante. Se trata de crear una última oportunidad para alimentos que todavía pueden aprovecharse.”<footer>La idea central de Rescate de alimentos</footer></blockquote>
+        </div>
+      </section>
+
+      <section class="cta" id="participar">
+        <div class="shell cta-box">
+          <h2>Menos desperdicio empieza con una reserva.</h2>
+          <p>Este prototipo muestra cómo usuarios y establecimientos podrían encontrarse en una experiencia rápida, clara y útil para ambos.</p>
+          <button class="btn btn-primary js-open-modal" type="button">Probar una reserva</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="shell site-footer">
+      <a class="brand" href="#inicio"><span class="brand-mark" aria-hidden="true">↗</span><span>Rescate de alimentos</span></a>
+      <span>Prototipo académico · 2026</span>
+    </footer>
+
+    <div class="modal-backdrop" id="prototype-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal">
+        <div class="modal-icon" aria-hidden="true">✓</div>
+        <h2 id="modal-title">Reserva simulada</h2>
+        <p>En la aplicación real, aquí confirmarías el paquete y recibirías la ubicación y la hora límite para recogerlo.</p>
+        <div class="modal-actions">
+          <button class="btn btn-dark" id="close-modal" type="button">Entendido</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const modal = document.getElementById('prototype-modal');
+      const closeButton = document.getElementById('close-modal');
+      const openButtons = document.querySelectorAll('.js-open-modal');
+      let lastTrigger = null;
+
+      function openModal(event) {
+        lastTrigger = event.currentTarget;
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        closeButton.focus();
+      }
+
+      function closeModal() {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+        if (lastTrigger) lastTrigger.focus();
+      }
+
+      openButtons.forEach((button) => button.addEventListener('click', openModal));
+      closeButton.addEventListener('click', closeModal);
+      modal.addEventListener('click', (event) => { if (event.target === modal) closeModal(); });
+      document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+    </script>
+  </body>
+</html>
